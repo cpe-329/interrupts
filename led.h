@@ -13,17 +13,11 @@
 #include "my_msp.h"
 
 #define LED1_PIN P1_0
-#define RGB_LED_PINS (P2_0 | P2_1 | P2_2)
 
-#define PIN_SEL0_GPIO      LED1_PIN
-#define PIN_SEL1_GPIO      LED1_PIN
-#define GPIO_1_MODE_OUTPUT LED1_PIN
-#define LED1_STATE_ON      LED1_PIN
-
-#define PIN_RGB_SEL0_GPIO    RGB_LED_PINS
-#define PIN_RGB_SEL1_GPIO    RGB_LED_PINS
-#define GPIO_RGB_MODE_OUTPUT RGB_LED_PINS
-#define LED_RGB_STATE_ON     RGB_LED_PINS
+#define RGB_RED_PIN P2_0
+#define RGB_GREEN_PIN P2_1
+#define RGB_BLUE_PIN P2_2
+#define RGB_PINS (RGB_RED_PIN | RGB_GREEN_PIN | RGB_BLUE_PIN)
 
 #define RGB_OFF       (0b00000000)
 #define RGB_RED       (0b00000001)

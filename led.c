@@ -14,21 +14,21 @@
 
 // Setup LED1
 inline void led_init(void){
-    P1->SEL0 &= ~BIT0;  // Set sel0 bit low for GPIO
-    P1->SEL1 &= ~BIT0;  // Set sel1 bit low for GPIO
-    P1->DIR |= GPIO_1_MODE_OUTPUT;  // Set P1.0 to output mode 
-    P1->OUT &= ~LED1_STATE_ON;  //  Set LED1 state to off
+    P1->SEL0 &= ~LED1_PIN;  // Set sel0 bit low for GPIO
+    P1->SEL1 &= ~LED1_PIN;  // Set sel1 bit low for GPIO
+    P1->DIR |= LED1_PIN;  // Set P1.0 to output mode 
+    P1->OUT &= ~LED1_PIN;  //  Set LED1 state to off
 }
 
 // Toggle LED1
 inline void led_toggle(void){
-    P1->OUT ^= LED1_STATE_ON;  // XOR LED1 state to toggle
+    P1->OUT ^= LED1_PIN;  // XOR LED1 state to toggle
 }
 inline void led_on(void){
-    P1->OUT |= LED1_STATE_ON;
+    P1->OUT |= LED1_PIN;
 }
 inline void led_off(void){
-    P1->OUT &= ~LED1_STATE_ON;
+    P1->OUT &= ~LED1_PIN;
 }
 
 // Blink LED on and off for given ms
@@ -40,16 +40,16 @@ void led_blink_ms(unsigned int ms){
 
 // Setup RGB LED
 void rgb_init(void){
-    P1->SEL0 &= ~PIN_RGB_SEL0_GPIO;  // Set sel0 bits low for GPIO
-    P1->SEL1 &= ~PIN_RGB_SEL1_GPIO;  // Set sel1 bits low for GPIO
-    P2->DIR |= GPIO_RGB_MODE_OUTPUT;  // Set P2.0 - P2.2 to output mode
-    P2->OUT &= ~LED_RGB_STATE_ON;  // Set RGB LED state to off
+    P1->SEL0 &= ~RGB_PINS;  // Set sel0 bits low for GPIO
+    P1->SEL1 &= ~RGB_PINS;  // Set sel1 bits low for GPIO
+    P2->DIR |= RGB_PINS;  // Set P2.0 - P2.2 to output mode
+    P2->OUT &= ~RGB_PINS;  // Set RGB LED state to off
 }
 
 // Set 3 bits of RGB LED
 void rgb_set(int value){
-    P2->OUT &= ~LED_RGB_STATE_ON;  // Clear previous RGB LED state
-    P2->OUT |= (value & LED_RGB_STATE_ON);  // Set RGB LED state
+    P2->OUT &= ~RGB_PINS;  // Clear previous RGB LED state
+    P2->OUT |= (value & RGB_PINS);  // Set RGB LED state
 }
 
 // Blink all combinations of LEDs
