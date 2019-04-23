@@ -17,11 +17,11 @@
 #include "delay.h"
 #include "led.h"
 
-volatile uint8_t led_flag = 1;
+volatile uint8_t counter_2bit = 0;
 
 void main(void)
 {
-    init(FREQ_24_MHZ);
+    init(FREQ_1_5_MHZ);
 
 	P4->SEL0 |= P4_3;
 	P4->SEL1 &= ~P4_3;
@@ -29,13 +29,13 @@ void main(void)
 
 	// setup TIMER_A0
     TIMER_A0->CCTL[0] &= ~TIMER_A_CCTLN_CCIFG; // clear interrupt
-    TIMER_A0->CCTL[1] &= ~TIMER_A_CCTLN_CCIFG; // clear interrupt
+    // TIMER_A0->CCTL[1] &= ~TIMER_A_CCTLN_CCIFG; // clear interrupt
 
     TIMER_A0->CCTL[0] = TIMER_A_CCTLN_CCIE; // TACCR0 interrupt enabled
-    TIMER_A0->CCTL[1] = TIMER_A_CCTLN_CCIE; // TACCR1 interrupt enabled
+    // TIMER_A0->CCTL[1] = TIMER_A_CCTLN_CCIE; // TACCR1 interrupt enabled
 
-    TIMER_A0->CCR[0] = 120;   // set CCR0 count
-    TIMER_A0->CCR[1] = 60;   // set CCR1 count
+    TIMER_A0->CCR[0] = 657;   // set CCR0 count
+    // TIMER_A0->CCR[1] = 8;   // set CCR1 count
 
     TIMER_A0->CTL = TIMER_A_CTL_TASSEL_2 | // SMCLK,
                     TIMER_A_CTL_MC_1;  // UP mode, count up to CCR[0]
@@ -46,38 +46,43 @@ void main(void)
     __enable_irq();     // Enable global interrupt
 
     while(1){
-        if (led_flag != 0){
-            led_on();
-        }
-        else{
-            led_off();
-        }
+			switch(counter_2bit){
+				case 1:
+					led_on();
+					rgb_set(RGB_OFF);
+					break;
+				case 2:
+					led_off();
+					rgb_set(RGB_RED);
+					break;
+				case 3:
+					led_on();
+					rgb_set(RGB_RED);
+				default:
+					led_off();
+					rgb_set(RGB_OFF);
+					break;
+			}
     }
-
 }
+
 // Timer A0_0 interrupt service routine
 void TA0_0_IRQHandler(void) {
-    
-	P2->OUT |= BIT0;
-	
 	TIMER_A0->CCTL[0] &= ~TIMER_A_CCTLN_CCIFG;  // Clear the CCR0 interrupt
-	led_flag = 1;
-
-	P2->OUT &= ~BIT0;
-}
-
-// Timer A0_N interrupt service routine for CCR1 - CCR4
-void TA0_N_IRQHandler(void)
-{
-	P2->OUT |= BIT1;
-
-    if(TIMER_A0->CCTL[1]&TIMER_A_CCTLN_CCIFG)   // check for CCR1 interrupt
-    {
-        TIMER_A0->CCTL[1] &= ~TIMER_A_CCTLN_CCIFG; // clear CCR1 interrupt
-		
-        led_flag = 0;
-    }
-
-	P2->OUT &= ~BIT1;
+	
+	switch(counter_2bit){
+		case 0:
+			counter_2bit = 1;
+			break;
+		case 1:
+			counter_2bit = 2;
+			break;
+		case 2:
+			counter_2bit = 3;
+			break;
+		default:
+			counter_2bit = 0;
+			break;
+	}
 }
 
