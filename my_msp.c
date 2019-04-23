@@ -24,7 +24,7 @@ inline void init(const unsigned int freq){
 	led_init();
 	rgb_init();
 
-	lcd_init();
+	//lcd_init();
 
-	keypad_init();
+	//keypad_init();
 }
