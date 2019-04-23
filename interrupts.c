@@ -1,45 +1,43 @@
- 
-// #include "msp.h"
-// #include <stdint.h>
+#include "msp.h"
 
-// int main(void)
-// {
-//     // Hold the watchdog
-//     WDT_A->CTL = WDT_A_CTL_PW | WDT_A_CTL_HOLD;
+void main(void)
+{
 
-//     // Configuring P1.0 as output for red LED
-//     // and P1.1 (left button) as input with pull-up resistor.
+    init(FREQ_24_MHZ);
 
-//     P1->SEL0 &= ~(BIT0 + BIT1); // set P1.0 and P1.1 as GPIO
-//     P1->SEL1 &= ~(BIT0 + BIT1);
+    // setup TIMER_A0
+    TIMER_A0->CCTL[0] &= ~TIMER_A_CCTLN_CCIFG; // clear interrupt
+    TIMER_A0->CCTL[1] &= ~TIMER_A_CCTLN_CCIFG; // clear interrupt
 
-//     P1->DIR |= BIT0;        // set P1.0 output
-//     P1->OUT &= ~BIT0;
+    TIMER_A0->CCTL[0] = TIMER_A_CCTLN_CCIE; // TACCR0 interrupt enabled
+    TIMER_A0->CCTL[1] = TIMER_A_CCTLN_CCIE; // TACCR1 interrupt enabled
 
-//     P1->DIR &= ~BIT1;       // set P1.1 as input
-//     P1->REN |= BIT1;        // enable pull up resistor
-//     P1->OUT |= BIT1;
+    TIMER_A0->CCR[0] = 120;   // set CCR0 count
+    TIMER_A0->CCR[1] = 30;   // set CCR1 count
 
-//     P1->IES |= BIT1;        // Interrupt on high-to-low transition
-//     P1->IFG &= ~BIT1;       // Clear all P1 interrupt flags
-//     P1->IE  |= BIT1;        // Enable interrupt for P1.1
+    TIMER_A0->CTL = TIMER_A_CTL_TASSEL_1 | TIMER_A_CTL_MC_1; // SMCLK, UP mode
 
-//     // Enable Port 1 interrupt on the NVIC
-//     NVIC->ISER[1] = 1 << ((PORT1_IRQn) & 31);
+    NVIC->ISER[0] = 1 << ((TA0_0_IRQn) & 31);   // set NVIC interrupt
+    NVIC->ISER[0] = 1 << ((TA0_N_IRQn) & 31);   // TA0_0 and TA0_N
 
-//     // Enable global interrupt
-//     __enable_irq();
+    __enable_irq();     // Enable global interrupt
 
-//     while (1);  // loop that does nothing
-// }
+    while(1);
 
-// /* Port1 ISR */
-// void PORT1_IRQHandler(void)
-// {
-//     // Toggling the output on the LED
-//     if(P1->IFG & BIT1)
-//         P1->OUT ^= BIT0;
+}
+// Timer A0_0 interrupt service routine
+void TA0_0_IRQHandler(void) {
+    TIMER_A0->CCTL[0] &= ~TIMER_A_CCTLN_CCIFG;  // Clear the CCR0 interrupt
+    P1->OUT ^= BIT0;
+}
 
-//     P1->IFG &= ~BIT1;
+// Timer A0_N interrupt service routine for CCR1 - CCR4
+void TA0_N_IRQHandler(void)
+{
+    if(TIMER_A0->CCTL[1]&TIMER_A_CCTLN_CCIFG)   // check for CCR1 interrupt
+    {
+        TIMER_A0->CCTL[1] &= ~TIMER_A_CCTLN_CCIFG; // clear CCR1 interrupt
+        P2->OUT ^= BIT0;
+    }
+}
 
-// }
