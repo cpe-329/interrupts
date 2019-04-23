@@ -9,6 +9,7 @@ void init_dco(void){
     CS->CTL0 = CS_CTL0_DCORSEL_3;
     CS->CTL1 = CS_CTL1_SELA_2 |  // Set ACLK to REFCLK
                CS_CTL1_SELS_3 |  // Set SMCLK to DCO
+               CS_CTL1_DIVS_8 |
                CS_CTL1_SELM_3;  // Set MCLK to DCO
     CS->KEY = LOCK_CS_KEY;  // Lock key
 }
