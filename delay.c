@@ -9,6 +9,7 @@ void init_dco(void){
     CS->CTL0 = CS_CTL0_DCORSEL_3;
     CS->CTL1 = CS_CTL1_SELA_2 |  // Set ACLK to REFCLK
                CS_CTL1_SELS_3 |  // Set SMCLK to DCO
+               CS_CTL1_DIVS__8 | // Divide SMCLK by 8
                CS_CTL1_SELM_3;  // Set MCLK to DCO
     CS->KEY = LOCK_CS_KEY;  // Lock key
 }
@@ -55,7 +56,7 @@ void set_dco(unsigned int freq){
         // Default to 1.5MHz
         CS->CTL0 = CS_CTL0_DCORSEL_0;
     }
-    CS->KEY = 0;
+    CS->KEY = LOCK_CS_KEY;
 }
 
 // Loop counts for 1ms dealy at given frequencies
