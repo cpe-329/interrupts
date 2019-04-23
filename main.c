@@ -29,13 +29,9 @@
 
 void main(void)
 {
-	WDT_A->CTL = WDT_A_CTL_PW | WDT_A_CTL_HOLD;		// stop watchdog timer
 
-	P1->DIR |= BIT0;    // setup P1.0 and P2.0 LEDs
-	P2->DIR |= BIT0;
-
-	P1->OUT &= ~BIT0;   // turn LEDs off
-	P2->OUT &= ~BIT0;
+    init();
+    set_dco(FREQ_24_MHZ); // set the dco to 24MHZ
 
 	// setup TIMER_A0
     TIMER_A0->CCTL[0] &= ~TIMER_A_CCTLN_CCIFG; // clear interrupt
